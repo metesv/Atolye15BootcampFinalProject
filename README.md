@@ -1,7 +1,5 @@
 # Atolye15BootcampFinalProject
 
-# Atolye15BootcampFinalProject
-
 ## Son Harfinden Kelime Türetme Oyunu
 
 Oyun, kelimenin son harfinden yeni bir kelime türeterek oynanıyor. Kelime içeriğimizin Türkçe isimler
