@@ -3,15 +3,18 @@ import { names } from "./data/names.js";
 const gameStartBtn = document.querySelector("#game-start-btn");
 const computerInput = document.querySelector("#computer-input");
 const userInput = document.querySelector("#user-input");
+const turnTitle = document.querySelector("#turn-title");
 
 const SpeechRecognition =
   window.SpeechRecognition || window.webkitSpeechRecognition;
 
 if (SpeechRecognition) {
-  const nameDatas = names;
-  let currentAnswer = "";
+  let currentLastChar = "";
+  let userAnswer = "";
+  let recognize = false;
   const computerAnswers = [];
   const userAnswers = [];
+
   const recognition = new SpeechRecognition();
 
   recognition.continuous = false;
@@ -22,43 +25,67 @@ if (SpeechRecognition) {
   gameStartBtn.addEventListener("click", () => {
     let initialComputerAnswer = names[Math.floor(Math.random() * names.length)];
 
-    currentAnswer = initialComputerAnswer.charAt(
+    currentLastChar = initialComputerAnswer.charAt(
       initialComputerAnswer.length - 1
     );
+    computerAnswers.push(initialComputerAnswer);
     computerInput.value = initialComputerAnswer;
     recordUser();
   });
 
   recognition.addEventListener("result", (e) => {
-    let result = e.results[0][0].transcript.toLowerCase();
-    if (currentAnswer === result.charAt(0)) {
-      userInput.value = result;
-      userAnswers.push(result);
-      currentAnswer = result.charAt(result.length - 1);
+    userAnswer = e.results[0][0].transcript.toLowerCase();
+    userInput.value = userAnswer;
+    turnTitle.textContent = "Computer Turn!";
+    if (checkUserAnswer(userAnswer)) {
+      changeTurn();
     } else {
-      alert("you lose");
+      alert("Wrong answer");
     }
-    setTimeout(() => {
-      computerInput.value = computerAnswer(currentAnswer);
-    }, 1500);
   });
 
   function recordUser() {
     recognition.start();
+    recognize = true;
     console.log("started");
+    turnTitle.textContent = "Your Turn!";
+    gameStartBtn.disabled = true;
     setTimeout(() => {
       recognition.stop();
-      console.log("ended");
-    }, 5000);
+      recognize = false;
+    }, 8000);
   }
 
-  function computerAnswer(firstChar) {
+  function changeTurn() {
+    computerInput.value = computerAnswer(userAnswer);
+    setInterval(() => {
+      if (!recognize) {
+        recordUser();
+      }
+    }, 1500);
+  }
+
+  function computerAnswer(result) {
+    const firstChar = result.charAt(result.length - 1);
     const found = names.find(
       (element) =>
         element.charAt(0) === firstChar && !computerAnswers.includes(element)
     );
     computerAnswers.push(found);
+    currentLastChar = found.charAt(found.length - 1);
     return found;
+  }
+
+  function checkUserAnswer(result) {
+    if (currentLastChar === result.charAt(0)) {
+      userAnswers.push(result);
+      currentLastChar = result.charAt(result.length - 1);
+      console.log(userAnswers);
+      console.log(computerAnswers);
+      return true;
+    } else {
+      return false;
+    }
   }
 } else {
   alert("Your browser does not support this app");
