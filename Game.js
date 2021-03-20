@@ -29,6 +29,7 @@ export default class Game {
         initialComputerAnswer.length - 1
       );
       this.computerAnswers.push(initialComputerAnswer);
+      this.createNewLi("pc", initialComputerAnswer);
       this.computerInput.value = initialComputerAnswer;
       this.recordUser();
     });
@@ -74,6 +75,7 @@ export default class Game {
         !this.computerAnswers.includes(element)
     );
     this.computerAnswers.push(found);
+    this.createNewLi("pc", found);
     this.currentLastChar = found.charAt(found.length - 1);
     return found;
   }
@@ -81,12 +83,24 @@ export default class Game {
   checkUserAnswer(result) {
     if (this.currentLastChar === result.charAt(0)) {
       this.userAnswers.push(result);
+      this.createNewLi("user", result);
       this.currentLastChar = result.charAt(result.length - 1);
       console.log(this.userAnswers);
       console.log(this.computerAnswers);
       return true;
     } else {
       return false;
+    }
+  }
+
+  createNewLi(who, value) {
+    const li = document.createElement("li");
+    li.textContent = value;
+    if (who === "user") {
+      this.userAnswersList.appendChild(li);
+    }
+    if (who === "pc") {
+      this.computerAnswersList.appendChild(li);
     }
   }
 
@@ -100,7 +114,9 @@ export default class Game {
                       <button id="game-start-btn">Start Game</button>
                       <br />
                       <hr />
-                      <input type="text" value="" name="computer-input" id="computer-input" />`;
+                      <input type="text" value="" name="computer-input" id="computer-input" />
+                      <ol id="user-answers-list"></ol>
+                      <ol id="cp-answers-list"></ol>`;
     body.appendChild(div);
   }
 
@@ -109,7 +125,8 @@ export default class Game {
     this.computerInput = document.querySelector("#computer-input");
     this.userInput = document.querySelector("#user-input");
     this.turnTitle = document.querySelector("#turn-title");
-    console.log(this.recognition);
+    this.userAnswersList = document.querySelector("#user-answers-list");
+    this.computerAnswersList = document.querySelector("#cp-answers-list");
   }
 
   init() {
