@@ -11,6 +11,7 @@ export default class Game {
     this.currentLastChar = "";
     this.userAnswer = "";
     this.recognize = false;
+    this.gameOver = false;
     this.computerAnswers = [];
     this.userAnswers = [];
 
@@ -41,7 +42,7 @@ export default class Game {
       if (this.checkUserAnswer(this.userAnswer)) {
         this.changeTurn();
       } else {
-        alert("Wrong answer");
+        this.endGame("user");
       }
     });
   }
@@ -49,7 +50,6 @@ export default class Game {
   recordUser() {
     this.recognition.start();
     this.recognize = true;
-    console.log("started");
     this.turnTitle.textContent = "Your Turn!";
     this.gameStartBtn.disabled = true;
     setTimeout(() => {
@@ -61,27 +61,36 @@ export default class Game {
   changeTurn() {
     this.computerInput.value = this.computerAnswer(this.userAnswer);
     setInterval(() => {
-      if (!this.recognize) {
+      if (!this.recognize && !this.gameOver) {
         this.recordUser();
       }
-    }, 1500);
+    }, 2000);
   }
 
   computerAnswer(result) {
-    const firstChar = result.charAt(result.length - 1);
-    const found = names.find(
-      (element) =>
-        element.charAt(0) === firstChar &&
-        !this.computerAnswers.includes(element)
-    );
-    this.computerAnswers.push(found);
-    this.createNewLi("pc", found);
-    this.currentLastChar = found.charAt(found.length - 1);
-    return found;
+    const answerPossibility = Math.floor(Math.random() * 100);
+    console.log(answerPossibility);
+    if (answerPossibility < 30) {
+      this.endGame("pc");
+    } else {
+      const firstChar = result.charAt(result.length - 1);
+      const found = names.find(
+        (element) =>
+          element.charAt(0) === firstChar &&
+          !this.computerAnswers.includes(element)
+      );
+      this.computerAnswers.push(found);
+      this.createNewLi("pc", found);
+      this.currentLastChar = found.charAt(found.length - 1);
+      return found;
+    }
   }
 
   checkUserAnswer(result) {
-    if (this.currentLastChar === result.charAt(0)) {
+    if (
+      this.currentLastChar === result.charAt(0) &&
+      !this.userAnswers.includes(result)
+    ) {
       this.userAnswers.push(result);
       this.createNewLi("user", result);
       this.currentLastChar = result.charAt(result.length - 1);
@@ -104,10 +113,22 @@ export default class Game {
     }
   }
 
+  endGame(who) {
+    this.gameOver = true;
+    this.recognition.abort();
+    if (who === "user") {
+      this.turnTitle.textContent = "Computer Win";
+    }
+    if (who === "pc") {
+      this.turnTitle.textContent = "You Win!!!";
+    }
+  }
+
   initUI() {
     const body = document.body;
     const div = document.createElement("div");
-    div.innerHTML = `<h1 id="turn-title"></h1>
+    div.id = "game-div";
+    div.innerHTML = `<h1 id="turn-title">Welcome to speech game!</h1>
                       <input type="text" value="" name="user-input" id="user-input" />
                       <br />
                       <hr />
@@ -123,6 +144,7 @@ export default class Game {
   initSelectors() {
     this.gameStartBtn = document.querySelector("#game-start-btn");
     this.computerInput = document.querySelector("#computer-input");
+    this.gameDiv = document.querySelector("#game-div");
     this.userInput = document.querySelector("#user-input");
     this.turnTitle = document.querySelector("#turn-title");
     this.userAnswersList = document.querySelector("#user-answers-list");
