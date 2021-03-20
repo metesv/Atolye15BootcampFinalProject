@@ -32,6 +32,7 @@ export default class Game {
       this.computerAnswers.push(initialComputerAnswer);
       this.createNewLi("pc", initialComputerAnswer);
       this.computerInput.value = initialComputerAnswer;
+      this.playText(this.computerInput.value);
       this.recordUser();
     });
 
@@ -60,11 +61,12 @@ export default class Game {
 
   changeTurn() {
     this.computerInput.value = this.computerAnswer(this.userAnswer);
+    this.playText(this.computerInput.value);
     setInterval(() => {
       if (!this.recognize && !this.gameOver) {
         this.recordUser();
       }
-    }, 2000);
+    }, 1000);
   }
 
   computerAnswer(result) {
@@ -84,6 +86,13 @@ export default class Game {
       this.currentLastChar = found.charAt(found.length - 1);
       return found;
     }
+  }
+
+  playText(text) {
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.rate = 1;
+    utterance.lang = "ru-RU";
+    speechSynthesis.speak(utterance);
   }
 
   checkUserAnswer(result) {
