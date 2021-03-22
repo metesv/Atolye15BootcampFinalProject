@@ -1,7 +1,9 @@
 import { names } from "./data/names.js";
 
 export default class Game {
-  constructor(recognition) {
+  constructor(recognition, difficultyLevel) {
+    this.difficultyLevel = difficultyLevel;
+
     this.recognition = recognition;
     recognition.continuous = false;
     recognition.lang = "tr-TR";
@@ -72,7 +74,7 @@ export default class Game {
   computerAnswer(result) {
     const answerPossibility = Math.floor(Math.random() * 100);
     console.log(answerPossibility);
-    if (answerPossibility < 30) {
+    if (answerPossibility < this.difficultyLevel) {
       this.endGame("pc");
     } else {
       const firstChar = result.charAt(result.length - 1);
@@ -138,13 +140,13 @@ export default class Game {
     const div = document.createElement("div");
     div.id = "game-div";
     div.innerHTML = `<h1 id="turn-title">Welcome to speech game!</h1>
-                      <input type="text" value="" name="user-input" id="user-input" />
+                      <input type="text" value="-" name="user-input" id="user-input" />
                       <br />
                       <hr />
                       <button id="game-start-btn">Start Game</button>
                       <br />
                       <hr />
-                      <input type="text" value="" name="computer-input" id="computer-input" />
+                      <input type="text" value="-" name="computer-input" id="computer-input" />
                       <ol id="user-answers-list"></ol>
                       <ol id="cp-answers-list"></ol>`;
     body.appendChild(div);
