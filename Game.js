@@ -12,6 +12,7 @@ export default class Game {
 
     this.currentLastChar = "";
     this.userAnswer = "";
+    this.prevUserAnswer = "";
     this.recognize = false;
     this.gameOver = false;
     this.computerAnswers = [];
@@ -39,6 +40,7 @@ export default class Game {
     });
 
     this.recognition.addEventListener("result", (e) => {
+      this.prevUserAnswer = this.userAnswer;
       this.userAnswer = e.results[0][0].transcript.toLowerCase();
       this.userInput.value = this.userAnswer;
       this.turnTitle.textContent = "Computer Turn!";
@@ -58,6 +60,9 @@ export default class Game {
     setTimeout(() => {
       this.recognition.stop();
       this.recognize = false;
+      if (this.prevUserAnswer === this.userAnswer) {
+        this.endGame("user");
+      }
     }, 8000);
   }
 
@@ -105,8 +110,6 @@ export default class Game {
       this.userAnswers.push(result);
       this.createNewLi("user", result);
       this.currentLastChar = result.charAt(result.length - 1);
-      console.log(this.userAnswers);
-      console.log(this.computerAnswers);
       return true;
     } else {
       return false;
@@ -127,18 +130,20 @@ export default class Game {
   endGame(who) {
     this.gameOver = true;
     this.recognition.abort();
+    const winnerTitle = document.createElement("h1");
+    this.gameDiv.insertBefore(winnerTitle, this.turnTitle);
     if (who === "user") {
-      this.turnTitle.textContent = "Computer Win";
+      winnerTitle.textContent = `Computer Win! Your score is ${this.userAnswers.length}`;
     }
     if (who === "pc") {
-      this.turnTitle.textContent = "You Win!!!";
+      winnerTitle.textContent = `You Win! Your score is ${this.userAnswers.length}`;
     }
   }
 
   initUI() {
     const body = document.body;
     const div = document.createElement("div");
-    div.id = "game-div";
+    div.setAttribute("class", "game-div");
     div.innerHTML = `<h1 id="turn-title">Welcome to speech game!</h1>
                       <input type="text" value="-" name="user-input" id="user-input" />
                       <br />
@@ -155,7 +160,7 @@ export default class Game {
   initSelectors() {
     this.gameStartBtn = document.querySelector("#game-start-btn");
     this.computerInput = document.querySelector("#computer-input");
-    this.gameDiv = document.querySelector("#game-div");
+    this.gameDiv = document.querySelector(".game-div");
     this.userInput = document.querySelector("#user-input");
     this.turnTitle = document.querySelector("#turn-title");
     this.userAnswersList = document.querySelector("#user-answers-list");
