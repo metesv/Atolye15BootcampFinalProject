@@ -24,6 +24,34 @@ export default class Game {
     this.turnTitle = null;
   }
 
+  initUI() {
+    const body = document.body;
+    const div = document.createElement("div");
+    div.setAttribute("class", "game-div");
+    div.innerHTML = `<h1 id="turn-title">Welcome to speech game!</h1>
+                      <input type="text" value="-" name="user-input" id="user-input" />
+                      <br />
+                      <hr />
+                      <button id="game-start-btn">Start Game</button>
+                      <br />
+                      <hr />
+                      <input type="text" value="-" name="computer-input" id="computer-input" />
+                      <ol id="user-answers-list"></ol>
+                      <ol id="cp-answers-list"></ol>`;
+    body.appendChild(div);
+  }
+
+  initSelectors() {
+    this.gameStartBtn = document.querySelector("#game-start-btn");
+    this.computerInput = document.querySelector("#computer-input");
+    this.gameDiv = document.querySelector(".game-div");
+    this.userInput = document.querySelector("#user-input");
+    this.turnTitle = document.querySelector("#turn-title");
+    this.userAnswersList = document.querySelector("#user-answers-list");
+    this.computerAnswersList = document.querySelector("#cp-answers-list");
+    this.difficultyForm = document.querySelector(".difficulty-form");
+  }
+
   initEventListeners() {
     this.gameStartBtn.addEventListener("click", () => {
       let initialComputerAnswer =
@@ -41,7 +69,7 @@ export default class Game {
 
     this.recognition.addEventListener("result", (e) => {
       this.prevUserAnswer = this.userAnswer;
-      this.userAnswer = e.results[0][0].transcript.toLowerCase();
+      this.userAnswer = e.results[0][0].transcript.toLowerCase().split(" ")[0];
       this.userInput.value = this.userAnswer;
       this.turnTitle.textContent = "Computer Turn!";
       if (this.checkUserAnswer(this.userAnswer)) {
@@ -138,33 +166,7 @@ export default class Game {
     if (who === "pc") {
       winnerTitle.textContent = `You Win! Your score is ${this.userAnswers.length}`;
     }
-  }
-
-  initUI() {
-    const body = document.body;
-    const div = document.createElement("div");
-    div.setAttribute("class", "game-div");
-    div.innerHTML = `<h1 id="turn-title">Welcome to speech game!</h1>
-                      <input type="text" value="-" name="user-input" id="user-input" />
-                      <br />
-                      <hr />
-                      <button id="game-start-btn">Start Game</button>
-                      <br />
-                      <hr />
-                      <input type="text" value="-" name="computer-input" id="computer-input" />
-                      <ol id="user-answers-list"></ol>
-                      <ol id="cp-answers-list"></ol>`;
-    body.appendChild(div);
-  }
-
-  initSelectors() {
-    this.gameStartBtn = document.querySelector("#game-start-btn");
-    this.computerInput = document.querySelector("#computer-input");
-    this.gameDiv = document.querySelector(".game-div");
-    this.userInput = document.querySelector("#user-input");
-    this.turnTitle = document.querySelector("#turn-title");
-    this.userAnswersList = document.querySelector("#user-answers-list");
-    this.computerAnswersList = document.querySelector("#cp-answers-list");
+    this.difficultyForm.style.display = "block";
   }
 
   init() {
