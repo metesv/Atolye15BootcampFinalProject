@@ -7,6 +7,26 @@ if (SpeechRecognition) {
   const recognition = new SpeechRecognition();
   const goGameBtn = document.querySelector("#go-game-btn");
   const difficultyForm = document.querySelector(".difficulty-form");
+
+  window.addEventListener("load", (e) => {
+    if (localStorage.getItem("highScores") === null) {
+      const highScores = {
+        easy: 0,
+        medium: 0,
+        hard: 0,
+      };
+
+      localStorage.setItem("highScores", JSON.stringify(highScores));
+    }
+    const highScores = JSON.parse(localStorage.getItem("highScores"));
+    const ul = document.createElement("ul");
+    ul.setAttribute("class", "high-scores-list");
+    ul.innerHTML = `<li>Easy: ${highScores.easy}</li>
+                    <li>Medium: ${highScores.medium}</li>
+                    <li>Hard: ${highScores.hard}</li>`;
+    document.body.appendChild(ul);
+  });
+
   goGameBtn.addEventListener("click", (e) => {
     e.preventDefault();
     difficultyForm.style.display = "none";

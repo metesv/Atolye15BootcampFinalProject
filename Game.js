@@ -50,6 +50,9 @@ export default class Game {
     this.userAnswersList = document.querySelector("#user-answers-list");
     this.computerAnswersList = document.querySelector("#cp-answers-list");
     this.difficultyForm = document.querySelector(".difficulty-form");
+    this.difficultyLevelElement = document.querySelector(
+      'input[name="level"]:checked'
+    );
   }
 
   initEventListeners() {
@@ -159,6 +162,7 @@ export default class Game {
     this.gameOver = true;
     this.recognition.abort();
     const winnerTitle = document.createElement("h1");
+    this.saveHighScoreLocally();
     this.gameDiv.insertBefore(winnerTitle, this.turnTitle);
     if (who === "user") {
       winnerTitle.textContent = `Computer Win! Your score is ${this.userAnswers.length}`;
@@ -167,6 +171,15 @@ export default class Game {
       winnerTitle.textContent = `You Win! Your score is ${this.userAnswers.length}`;
     }
     this.difficultyForm.style.display = "block";
+  }
+
+  saveHighScoreLocally() {
+    const highestScore = JSON.parse(localStorage.getItem("highScores"));
+    const highestScoreLevel = this.difficultyLevelElement.dataset.level;
+    if (this.userAnswers.length > highestScore[highestScoreLevel]) {
+      highestScore[highestScoreLevel] = this.userAnswers.length;
+      localStorage.setItem("highScores", JSON.stringify(highestScore));
+    }
   }
 
   init() {
