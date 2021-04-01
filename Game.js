@@ -75,11 +75,6 @@ export default class Game {
       this.userAnswer = e.results[0][0].transcript.toLowerCase().split(" ")[0];
       this.userInput.value = this.userAnswer;
       this.turnTitle.textContent = "Computer Turn!";
-      if (this.checkUserAnswer(this.userAnswer)) {
-        this.changeTurn();
-      } else {
-        this.endGame("user");
-      }
     });
   }
 
@@ -88,10 +83,24 @@ export default class Game {
     this.recognize = true;
     this.turnTitle.textContent = "Your Turn!";
     this.gameStartBtn.disabled = true;
+    const timeH2 = document.createElement("h2");
+    this.turnTitle.prepend(timeH2);
+    let remainingSecond = 7;
+    let interval = setInterval(function () {
+      timeH2.textContent = `Remaining Time: ${remainingSecond}`;
+      remainingSecond--;
+      if (remainingSecond === -1) {
+        clearInterval(interval);
+      }
+    }, 1000);
     setTimeout(() => {
       this.recognition.stop();
       this.recognize = false;
-      if (this.prevUserAnswer === this.userAnswer) {
+      if (this.checkUserAnswer(this.userAnswer)) {
+        this.changeTurn();
+      } else if (this.prevUserAnswer === this.userAnswer) {
+        this.endGame("user");
+      } else {
         this.endGame("user");
       }
     }, 8000);
